@@ -1,0 +1,86 @@
+
+name: Build Farnava Android Debug APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
+
+      - name: Locate Farnava project
+        id: project
+        shell: bash
+        run: |
+          if [[ -f package.json && -f capacitor.config.json ]]; then
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          elif [[ -f Farnava_Premium/package.json && -f Farnava_Premium/capacitor.config.json ]]; then
+            echo "dir=Farnava_Premium" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Farnava project files not found."
+            ls -la
+            exit 1
+          fi
+
+      - name: Install dependencies
+        working-directory: ${{ steps.project.outputs.dir }}
+        run: npm install --no-audit --no-fund
+
+      - name: Prepare Android project
+        working-directory: ${{ steps.project.outputs.dir }}
+        run: |
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
+
+          if [ ! -d android/app ]; then
+            echo "Android app directory is missing."
+            exit 1
+          fi
+
+          npx cap sync android
+
+      - name: Build Debug APK
+        working-directory: ${{ steps.project.outputs.dir }}/android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: farnava-premium-preview-debug-apk
+          path: ${{ steps.project.outputs.dir }}/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
