@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12314e">
+  <meta name="description" content="فرنوا پریمیوم؛ مدیریت فاکتور، هزینه، خروجی حرفه‌ای و بکاپ فایل‌محور">
+  <meta name="color-scheme" content="light">
+  <title>فرنوا پریمیوم</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark">ف</div>
+        <div>
+          <h1>فرنوا پریمیوم</h1>
+          <p>نسخه آزمایشی حرفه‌ای برای موبایل</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="quickAddBtn" aria-label="افزودن سریع">＋</button>
+    </header>
+
+    <main class="page-content">
+      <section class="view active" id="view-dashboard" data-view="dashboard">
+        <div class="hero-card">
+          <div>
+            <div class="eyebrow">وضعیت امروز</div>
+            <h2>مدیریت حرفه‌ای، راحت برای لمس با انگشت</h2>
+            <p>کارت‌ها، دکمه‌ها و فرم‌ها برای موبایل بازطراحی شده‌اند.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="primary-btn big-btn" id="newInvoiceHero">فاکتور جدید</button>
+            <button class="secondary-btn big-btn" id="newExpenseHero">هزینه جدید</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>نمودار فروش و هزینه</h3>
+              <p>۶ ماه اخیر</p>
+            </div>
+          </div>
+          <canvas id="statsChart" height="240"></canvas>
+        </section>
+
+        <div class="two-panels">
+          <section class="panel">
+            <div class="panel-head"><h3>آخرین فاکتورها</h3></div>
+            <div id="recentInvoices" class="stack-list empty-state">هنوز فاکتوری ثبت نشده است.</div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h3>آخرین هزینه‌ها</h3></div>
+            <div id="recentExpenses" class="stack-list empty-state">هنوز هزینه‌ای ثبت نشده است.</div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-invoices" data-view="invoices">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>فاکتورها</h3>
+              <p>خروجی PDF، Word، PNG و JPG</p>
+            </div>
+            <button class="primary-btn" id="newInvoiceBtn">فاکتور جدید</button>
+          </div>
+          <div class="toolbar">
+            <input class="text-input" id="invoiceSearch" placeholder="جستجو بر اساس شماره، مشتری یا عنوان کالا">
+          </div>
+          <div id="invoiceList" class="stack-list"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-expenses" data-view="expenses">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>هزینه‌ها</h3>
+              <p>ثبت هزینه‌های جاری و تحلیل سود</p>
+            </div>
+            <button class="primary-btn" id="newExpenseBtn">هزینه جدید</button>
+          </div>
+          <div id="expenseList" class="stack-list"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings" data-view="settings">
+        <section class="panel">
+          <div class="panel-head"><h3>تنظیمات کسب‌وکار و خروجی</h3></div>
+          <form id="settingsForm" class="form-grid">
+            <label class="field">
+              <span>نام کسب‌وکار</span>
+              <input class="text-input" name="businessName" placeholder="مثلاً فروشگاه فرنوا">
+            </label>
+            <label class="field">
+              <span>نام مدیر / فروشنده</span>
+              <input class="text-input" name="managerName" placeholder="نام فروشنده">
+            </label>
+            <label class="field">
+              <span>شماره تماس</span>
+              <input class="text-input" name="phone" placeholder="09xxxxxxxxx">
+            </label>
+            <label class="field">
+              <span>آدرس</span>
+              <textarea class="text-input" name="address" rows="3" placeholder="آدرس کسب‌وکار"></textarea>
+            </label>
+            <label class="field">
+              <span>اندازه پیش‌فرض خروجی</span>
+              <select class="text-input" name="paperSize">
+                <option value="A4">A4</option>
+                <option value="A5">A5</option>
+                <option value="80mm">رسید 80mm</option>
+              </select>
+            </label>
+            <label class="field toggle-field">
+              <span>افکت صدا</span>
+              <input type="checkbox" name="soundEnabled">
+            </label>
+            <label class="field toggle-field">
+              <span>انیمیشن‌ها</span>
+              <input type="checkbox" name="animationsEnabled">
+            </label>
+            <div class="settings-actions">
+              <button type="submit" class="primary-btn">ذخیره تنظیمات</button>
+              <button type="button" class="secondary-btn" id="seedDemoBtn">ساخت داده نمونه</button>
+              <button type="button" class="danger-btn" id="resetDataBtn">پاک‌کردن همه داده‌ها</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h3>بکاپ و بازیابی</h3></div>
+          <div class="backup-grid">
+            <button class="primary-btn big-btn" id="exportBackupBtn">دانلود بکاپ</button>
+            <button class="secondary-btn big-btn" id="importBackupBtn">بازیابی از فایل</button>
+            <input type="file" id="backupFileInput" accept=".farnava,.json,application/json" hidden>
+          </div>
+          <p class="muted">
+            بکاپ به‌صورت فایل محلی ذخیره می‌شود. هیچ سروری استفاده نشده است.
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="منوی اصلی">
+      <button class="nav-btn active" data-target="dashboard"><span class="nav-icon">🏠</span><span>خانه</span></button>
+      <button class="nav-btn" data-target="invoices"><span class="nav-icon">🧾</span><span>فاکتورها</span></button>
+      <button class="nav-btn" data-target="expenses"><span class="nav-icon">💳</span><span>هزینه‌ها</span></button>
+      <button class="nav-btn" data-target="settings"><span class="nav-icon">⚙️</span><span>تنظیمات</span></button>
+    </nav>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <section class="modal-sheet" id="modalSheet" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <div>
+          <div class="eyebrow" id="modalEyebrow">فرنوا</div>
+          <h3 id="modalTitle">عنوان</h3>
+        </div>
+        <button class="icon-btn" id="closeModalBtn" aria-label="بستن">✕</button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer" id="modalFooter"></footer>
+    </section>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="js/config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
